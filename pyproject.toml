@@ -23,6 +23,7 @@ dev-dependencies = []
 [tool.rye.scripts]
 main = "python -m src.matrix.main"
 player = "python -m src.matrix.playermatrix"
+coord = "python -m src.matrix.coordinates"
 
 [tool.hatch.metadata]
 allow-direct-references = true

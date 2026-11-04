@@ -1,10 +1,13 @@
 import pandas as pd
 import math
+import pygame as pg
+import src.matrix.var.constants as c
 
 class PlayerMatrix:
     def __init__(self, direction: list[list[float]] = [[0],[0]], position: list[list[float]] = [[0],[0]], width: int = 0):
         self.rotation: pd.DataFrame = pd.DataFrame(direction, index=["x", "y"])
         self.position: pd.DataFrame = pd.DataFrame(position, index=["x", "y"])
+        self.direction: pd.DataFrame = self.getDirection()
         self.leftBorder, self.rightBorder = self.getFOV(width)
 
 
@@ -18,6 +21,40 @@ class PlayerMatrix:
 
         print(f"Neue Richtung: {self.tupleOfMatrix(self.rotation)}\n")
         return self.rotation
+    
+    def getPosition(self, vektor = None):
+        if vektor is None: vektor = self.position
+        return (
+            c.SCREEN_MID_WIDTH + vektor.at["x", 0] * 100, # type: ignore
+            c.SCREEN_MID_HEIGHT - vektor.at["y", 0] * 100 # type: ignore
+        ) # type: ignore
+
+    def getDirection(self):
+        return pd.DataFrame([
+            [self.position.at["x", 0] + self.rotation.at["x", 0]], # type: ignore
+            [self.position.at["y", 0] + self.rotation.at["y", 0]]  # type: ignore
+        ], index=["x", "y"]
+        )
+
+    def drawChar(self, screen, color):
+        pg.draw.circle(screen, c.WHITE, self.getPosition(), 5) # type: ignore
+        pg.draw.circle(screen, color, self.getPosition(self.direction), 3) # type: ignore
+        pg.draw.line(screen, c.WHITE, self.getPosition(), self.getPosition(self.direction), width=1) # type: ignore
+
+
+
+
+
+
+
+    def getDirectionVektor(self, position = None, direction = None):
+        if position is None: position = self.position
+        if direction is None: direction = self.rotation
+        return self.getPosition(pd.DataFrame([
+            [position.at["x", 0] + direction.at["x", 0]], # type: ignore
+            [position.at["y", 0] + direction.at["y", 0]]  # type: ignore
+        ], index=["x", "y"]
+        ))
 
 
     def checkIfPointInFOV(self, point: pd.DataFrame):
@@ -60,7 +97,7 @@ class PlayerMatrix:
         self.leftBorder: pd.DataFrame = self.getRotatedMatrix(self.rotationsmatrix(math.radians(width))) # type: ignore
         self.rightBorder: pd.DataFrame = self.getRotatedMatrix(self.rotationsmatrix(math.radians(-width))) # type: ignore
 
-        print(f"FOV border vectors for direction {self.tupleOfMatrix(self.rotation)}:\n{self.tupleOfMatrix(self.leftBorder)}\n{self.tupleOfMatrix(self.rightBorder)}\n")
+        #print(f"FOV border vectors for direction {self.tupleOfMatrix(self.rotation)}:\n{self.tupleOfMatrix(self.leftBorder)}\n{self.tupleOfMatrix(self.rightBorder)}\n")
 
         return self.leftBorder, self.rightBorder
 
@@ -86,14 +123,14 @@ class PlayerMatrix:
     def tupleOfMatrix(self, m: pd.DataFrame):
         return (float(m.at["x", 0]), float(m.at["y", 0])) # type: ignore
 
+if "__main__" == __name__:
 
+    p = PlayerMatrix(
+        direction=[[1],[1]],
+        position=[[1],[2]]
+    )
 
-p = PlayerMatrix(
-    direction=[[1],[1]],
-    position=[[1],[2]]
-)
-
-p.getFOV(30)
-p.rotate(-30)
-p.getFOV(30)
-p.checkIfPointInFOV(pd.DataFrame([[5],[5]], index=["x", "y"]))
+    p.getFOV(30)
+    p.rotate(-30)
+    p.getFOV(30)
+    p.checkIfPointInFOV(pd.DataFrame([[5],[5]], index=["x", "y"]))
