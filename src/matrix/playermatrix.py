@@ -1,28 +1,37 @@
-import pandas as pd
+import pandas as pd # type: ignore
 import math
-import pygame as pg
+import pygame as pg # type: ignore
 import src.matrix.var.constants as c
 
 class PlayerMatrix:
-    def __init__(self, direction: list[list[float]] = [[0],[0]], position: list[list[float]] = [[0],[0]], width: int = 0):
+    def __init__(self, direction: list[list[float]] = [[0],[0]], position: list[list[float]] = [[0],[0]], width: int = 0): # type: ignore
         self.rotation: pd.DataFrame = pd.DataFrame(direction, index=["x", "y"])
         self.position: pd.DataFrame = pd.DataFrame(position, index=["x", "y"])
         self.direction: pd.DataFrame = self.getDirection()
         self.leftBorder, self.rightBorder = self.getFOV(width)
 
 
-    def rotate(self, angle: float ):
+    def rotate(self, angle: float):
         r: pd.DataFrame = self.rotationsmatrix(math.radians(angle))
         
-        print(f"Vorherige Richtung: {self.tupleOfMatrix(self.rotation)}")
-        print(f"Rotationsmatrix für eine Drehung von {angle} Grad: \n{r}")
+        #print(f"Vorherige Richtung: {self.tupleOfMatrix(self.rotation)}")
+        #print(f"Rotationsmatrix für eine Drehung von {angle} Grad: \n{r}")
 
-        self.rotation: pd.DataFrame = self.getRotatedMatrix(r) # type: ignore
+        self.rotation = self.getRotatedMatrix(r) # type: ignore
+        self.direction = self.getDirection()
 
-        print(f"Neue Richtung: {self.tupleOfMatrix(self.rotation)}\n")
+        #print(f"Neue Richtung: {self.tupleOfMatrix(self.rotation)}\n")
         return self.rotation
+
+    def move(self, m: tuple[float, float]):
+        self.position = pd.DataFrame([
+                [self.position.at["x", 0] + m[0]], # type: ignore
+                [self.position.at["y", 0] + m[1]]  # type: ignore
+            ], index=["x", "y"]
+        )
+        return self.position
     
-    def getPosition(self, vektor = None):
+    def getPosition(self, vektor = None): # type: ignore
         if vektor is None: vektor = self.position
         return (
             c.SCREEN_MID_WIDTH + vektor.at["x", 0] * 100, # type: ignore
@@ -36,10 +45,10 @@ class PlayerMatrix:
         ], index=["x", "y"]
         )
 
-    def drawChar(self, screen, color):
-        pg.draw.circle(screen, c.WHITE, self.getPosition(), 5) # type: ignore
-        pg.draw.circle(screen, color, self.getPosition(self.direction), 3) # type: ignore
-        pg.draw.line(screen, c.WHITE, self.getPosition(), self.getPosition(self.direction), width=1) # type: ignore
+    def drawChar(self, screen, color): # type: ignore
+        pg.draw.circle(screen, color, self.getPosition(), 5) # type: ignore
+        pg.draw.circle(screen, color, self.getPosition(self.direction), 2) # type: ignore
+        pg.draw.line(screen, color, self.getPosition(), self.getPosition(self.direction), width=3) # type: ignore
 
 
 
@@ -47,10 +56,10 @@ class PlayerMatrix:
 
 
 
-    def getDirectionVektor(self, position = None, direction = None):
+    def getDirectionVektor(self, position = None, direction = None): # type: ignore
         if position is None: position = self.position
         if direction is None: direction = self.rotation
-        return self.getPosition(pd.DataFrame([
+        return self.getPosition(pd.DataFrame([ # type: ignore
             [position.at["x", 0] + direction.at["x", 0]], # type: ignore
             [position.at["y", 0] + direction.at["y", 0]]  # type: ignore
         ], index=["x", "y"]
