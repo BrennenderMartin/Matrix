@@ -1,5 +1,7 @@
 import pygame as pg
-import src.matrix.var.constants as c
+from src.matrix.data import (
+    constants as c
+)
 from src.matrix.playermatrix import PlayerMatrix
 
 pg.init()
@@ -9,8 +11,10 @@ screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
-p = PlayerMatrix([[1],[1]], [[1],[1]], 30)
+p = PlayerMatrix([[0],[1]], [[1],[1]], 30)
 e = PlayerMatrix([[-1],[0]], [[3],[3]], 25)
+
+print(p.checkIfPointInFOV(e.norm(p.getRelativePostion(e.position))))
 
 running = True
 key_is_down: bool = False
@@ -54,6 +58,8 @@ while running:
                 kLeft = False
             elif event.key == pg.K_e: # type: ignore
                 kRight = False
+
+    
 
 
     screen.fill(c.WHITE)
