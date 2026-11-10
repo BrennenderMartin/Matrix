@@ -14,6 +14,7 @@ class PlayerMatrix:
         #self.leftBorder, self.rightBorder = self.getFOV(self.FOVwidth)
 
 
+
     def rotate(self, angle: int) -> np.ndarray:
         r: np.ndarray = self.rotationsmatrix(math.radians(angle))
         
@@ -26,24 +27,38 @@ class PlayerMatrix:
         #print(f"Neue Richtung: {self.direction}\n")
         return self.direction
 
+    def getRotatedMatrix(self, rotating: np.ndarray, toRotate: np.ndarray | None = None) -> np.ndarray:
+        if toRotate is None: toRotate = self.direction
+        #print(f"Rotating:\n{rotating}\n\nToRotate:\n{toRotate}")
+        return np.matmul(rotating, toRotate)
+
+    def rotationsmatrix(self, angle: float) -> np.ndarray:
+        return np.array([
+                [round(math.cos(angle), 6), round(-math.sin(angle), 6)],
+                [round(math.sin(angle), 6), round(math.cos(angle), 6)]
+        ])
+
+
+
     def move(self, m: tuple[float, float]) -> np.ndarray:
         self.position = np.add(self.position, np.array(m))
         self.pov = np.add(self.pov, np.array(m))
         return self.position
-    
-    def getPosition(self, vektor: np.ndarray | None = None) -> np.ndarray:
-        if vektor is None: vektor = self.position
-        return (
-            c.SCREEN_MID_WIDTH + vektor[0] * 100, # type: ignore
-            c.SCREEN_MID_HEIGHT - vektor[1] * 100 # type: ignore
-        )
+
+
 
     def drawChar(self, screen, color) -> None: # type: ignore
         pg.draw.circle(screen, color, self.getPosition(), 5) # type: ignore
         pg.draw.circle(screen, color, self.getPosition(self.pov), 2) # type: ignore
         pg.draw.line(screen, color, self.getPosition(), self.getPosition(self.pov), width=3) # type: ignore
 
-
+    def getPosition(self, vektor: np.ndarray | None = None) -> np.ndarray:
+        if vektor is None: vektor = self.position
+        return (
+            c.SCREEN_MID_WIDTH + vektor[0] * 100, # type: ignore
+            c.SCREEN_MID_HEIGHT - vektor[1] * 100 # type: ignore
+        )
+    
     """
     def getDirectionVektor(self, position: pd.DataFrame | None = None, direction: pd.DataFrame | None = None) -> tuple[int | float]:
         if position is None: position = self.position
@@ -112,18 +127,6 @@ class PlayerMatrix:
 
         return self.leftBorder, self.rightBorder
     """
-
-    def getRotatedMatrix(self, rotating: np.ndarray, toRotate: np.ndarray | None = None) -> np.ndarray:
-        if toRotate is None: toRotate = self.direction
-        #print(f"Rotating:\n{rotating}\n\nToRotate:\n{toRotate}")
-        return np.matmul(rotating, toRotate)
-
-
-    def rotationsmatrix(self, angle: float) -> np.ndarray:
-        return np.array([
-                [round(math.cos(angle), 6), round(-math.sin(angle), 6)],
-                [round(math.sin(angle), 6), round(math.cos(angle), 6)]
-        ])
 
 if "__main__" == __name__:
     p = PlayerMatrix([[0, 1], [1, 1]], 30)
