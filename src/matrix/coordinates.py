@@ -11,10 +11,8 @@ screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
-p = PlayerMatrix([[0],[1]], [[1],[1]], 30)
-e = PlayerMatrix([[-1],[0]], [[3],[3]], 25)
-
-print(p.checkIfPointInFOV(e.norm(p.getRelativePostion(e.position))))
+p = PlayerMatrix([[0, 1], [1, 1]], 30)
+e = PlayerMatrix([[-1, 0], [3, 3]], 25)
 
 running = True
 key_is_down: bool = False
@@ -42,12 +40,10 @@ while running:
             elif event.key == pg.K_q and not kLeft: # type: ignore
                 kLeft = True
                 p.rotate(15)
-                print(p.norm(p.rotation))
                 print("Turnign left")
             elif event.key == pg.K_e and not kRight: # type: ignore
                 kRight = True
                 p.rotate(-15)
-                print(p.norm(p.rotation))
                 print("Turnign right")
 
         elif event.type == pg.KEYUP:
