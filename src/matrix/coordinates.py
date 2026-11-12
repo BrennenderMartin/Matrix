@@ -3,38 +3,43 @@ from src.matrix.data import (
     constants as c
 )
 from src.matrix.playermatrix import PlayerMatrix
+from src.matrix.obstacle import Obstacle
 
 pg.init()
 
-screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
+screen: pg.Surface = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
 p = PlayerMatrix([[0, 1], [-2, -2]], 10)
 e = PlayerMatrix([[-1, 0], [3, 2]], 10)
 
+o = Obstacle([[1, 1], [2, 1], [2, 2], [1, 2]])
+
 print(p.getFOVPoints())
+print(o.verticies)
 
 running: bool = True
 key_is_down: bool = False
 while running:
+    #running = False
     key = pg.key.get_pressed()
-    if key[pg.K_a] == True:
+    if key[pg.K_a]:
         p.move((-.1, 0))
-    elif key[pg.K_d] == True:
+    elif key[pg.K_d]:
         p.move((.1, 0))
-    elif key[pg.K_w] == True:
+    elif key[pg.K_w]:
         p.move((0, .1))
-    elif key[pg.K_s] == True:
+    elif key[pg.K_s]:
         p.move((0, -.1))
 
-    elif key[pg.K_j] == True:
+    elif key[pg.K_j]:
         e.move((-.1, 0))
-    elif key[pg.K_l] == True:
+    elif key[pg.K_l]:
         e.move((.1, 0))
-    elif key[pg.K_i] == True:
+    elif key[pg.K_i]:
         e.move((0, .1))
-    elif key[pg.K_k] == True:
+    elif key[pg.K_k]:
         e.move((0, -.1))
     
     for event in pg.event.get():
@@ -47,17 +52,17 @@ while running:
                 print("CHARGE!!")  # Executes once
             
             elif event.key == pg.K_q and not p.kleft:
-                p.rotate(15, [True, False])
+                p.rotate(10, [True, False])
                 print("Turnign left")
             elif event.key == pg.K_e and not p.kright:
-                p.rotate(-15, [False, True])
+                p.rotate(-10, [False, True])
                 print("Turnign right")
 
             elif event.key == pg.K_u and not e.kleft:
-                e.rotate(15, [True, False])
+                e.rotate(10, [True, False])
                 print("Turnign left")
             elif event.key == pg.K_o and not e.kright:
-                e.rotate(-15, [False, True])
+                e.rotate(-10, [False, True])
                 print("Turnign right")
 
         elif event.type == pg.KEYUP:
@@ -81,8 +86,9 @@ while running:
     pg.draw.line(screen, c.BLACK, (0, c.SCREEN_MID_HEIGHT), (c.SCREEN_WIDTH, c.SCREEN_MID_HEIGHT), 2)
     pg.draw.line(screen, c.BLACK, (c.SCREEN_MID_WIDTH, 0), (c.SCREEN_MID_WIDTH, c.SCREEN_HEIGHT), 2)
 
-    p.drawChar(screen, c.BLUE) # type: ignore
-    e.drawChar(screen, c.PINK) # type: ignore
+    p.drawChar(screen, c.BLUE)
+    e.drawChar(screen, c.PINK)
+    o.draw(screen, c.KIWII)
 
     print(p.checkIfPointInFOV(e.position))
     print(e.checkIfPointInFOV(p.position))

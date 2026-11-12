@@ -1,11 +1,10 @@
-import pandas as pd # type: ignore
 import numpy as np 
 import math
-import pygame as pg # type: ignore
+import pygame as pg
 import src.matrix.data.constants as c
 
 class PlayerMatrix:
-    def __init__(self, m: list[list[float | int]] = [[0, 0], [0, 0]], width: int = 0):
+    def __init__(self, m: list[list[float | int]] = [[0, 0], [0, 0]], width: int = 0) -> None:
         self.direction: np.ndarray = np.array(m[0])
         self.position: np.ndarray = np.array(m[1])
         self.pov: np.ndarray = np.add(self.direction / 2, self.position)
@@ -53,17 +52,17 @@ class PlayerMatrix:
 
 
 
-    def drawChar(self, screen, color) -> None: # type: ignore
+    def drawChar(self, screen: pg.Surface, color: pg.Color) -> None:
         pg.draw.circle(screen, color, self.getPosition(), 5) # type: ignore
         #pg.draw.circle(screen, color, self.getPosition(self.pov), 2) # type: ignore
         pg.draw.line(screen, color, self.getPosition(), self.getPosition(self.pov), width=3) # type: ignore
         pg.draw.polygon(screen, color, self.getFOVPointsToDraw(), 2) # type: ignore
 
-    def getPosition(self, vektor: np.ndarray | None = None) -> np.ndarray:
-        if vektor is None: vektor = self.position
+    def getPosition(self, vector: np.ndarray | None = None) -> np.ndarray:
+        if vector is None: vector = self.position
         return np.array([
-            c.SCREEN_MID_WIDTH + vektor[0] * 100, # type: ignore
-            c.SCREEN_MID_HEIGHT - vektor[1] * 100 # type: ignore
+            c.SCREEN_MID_WIDTH + vector[0] * 100,
+            c.SCREEN_MID_HEIGHT - vector[1] * 100
         ])
 
 
@@ -73,7 +72,6 @@ class PlayerMatrix:
         scaleProduct = np.dot(self.direction, v)
         totalLength = round(np.linalg.norm(self.direction), 6) * round(np.linalg.norm(v), 6)
         acos = round(scaleProduct / totalLength, 5)
-        #print(acos)
         if acos > 1: math.floor(acos)
         return round(math.degrees(math.acos(acos)), 3)
 
@@ -89,7 +87,7 @@ class PlayerMatrix:
             np.add(self.position, 200 * self.getRotatedMatrix(self.rotationsmatrix(math.radians(-self.FOVwidth))))
         ])
 
-    def getFOVPointsToDraw(self):
+    def getFOVPointsToDraw(self) -> list[np.ndarray]:
         return [self.getPosition(item) for item in self.getFOVPoints()]
 
 
