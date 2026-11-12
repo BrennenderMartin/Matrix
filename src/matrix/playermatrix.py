@@ -8,9 +8,10 @@ class PlayerMatrix:
     def __init__(self, m: list[list[float | int]] = [[0, 0], [0, 0]], width: int = 0):
         self.direction: np.ndarray = np.array(m[0])
         self.position: np.ndarray = np.array(m[1])
-        self.pov: np.ndarray = np.add(self.direction, self.position)
+        self.pov: np.ndarray = np.add(self.direction / 2, self.position)
 
         self.FOVwidth: int = width
+        self.FOVpoints: np.ndarray = self.getFOVPoints()
 
         self.kleft: bool = False
         self.kright: bool = False
@@ -27,7 +28,7 @@ class PlayerMatrix:
         #print(f"Rotationsmatrix für eine Drehung von {angle} Grad: \n{r}")
 
         self.direction = self.getRotatedMatrix(r) 
-        self.pov = np.add(self.direction, self.position)
+        self.pov = np.add(self.direction / 2, self.position)
 
         #print(f"Neue Richtung: {self.direction}\n")
         return self.direction
@@ -47,14 +48,16 @@ class PlayerMatrix:
     def move(self, m: tuple[float, float]) -> np.ndarray:
         self.position = np.add(self.position, np.array(m))
         self.pov = np.add(self.pov, np.array(m))
+        self.FOVpoints = np.add(self.FOVpoints, np.repeat([np.array(m)], len(self.FOVpoints), axis=0))
         return self.position
 
 
 
     def drawChar(self, screen, color) -> None: # type: ignore
         pg.draw.circle(screen, color, self.getPosition(), 5) # type: ignore
-        pg.draw.circle(screen, color, self.getPosition(self.pov), 2) # type: ignore
+        #pg.draw.circle(screen, color, self.getPosition(self.pov), 2) # type: ignore
         pg.draw.line(screen, color, self.getPosition(), self.getPosition(self.pov), width=3) # type: ignore
+        pg.draw.polygon(screen, color, self.getFOVPointsToDraw(), 2) # type: ignore
 
     def getPosition(self, vektor: np.ndarray | None = None) -> np.ndarray:
         if vektor is None: vektor = self.position
@@ -76,6 +79,18 @@ class PlayerMatrix:
 
     def checkIfPointInFOV(self, point: np.ndarray) -> bool:
         return self.checkAngle(point) < self.FOVwidth
+
+
+
+    def getFOVPoints(self):
+        return np.array([
+            self.position,
+            np.add(self.position, 200 * self.getRotatedMatrix(self.rotationsmatrix(math.radians(self.FOVwidth)))),
+            np.add(self.position, 200 * self.getRotatedMatrix(self.rotationsmatrix(math.radians(-self.FOVwidth))))
+        ])
+
+    def getFOVPointsToDraw(self):
+        return [self.getPosition(item) for item in self.getFOVPoints()]
 
 
 if "__main__" == __name__:

@@ -10,8 +10,10 @@ screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
-p = PlayerMatrix([[0, 1], [-2, -2]], 30)
-e = PlayerMatrix([[-1, 0], [3, 3]], 25)
+p = PlayerMatrix([[0, 1], [-2, -2]], 10)
+e = PlayerMatrix([[-1, 0], [3, 2]], 10)
+
+print(p.getFOVPoints())
 
 running: bool = True
 key_is_down: bool = False
