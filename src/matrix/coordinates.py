@@ -1,10 +1,11 @@
 import pygame as pg
+from src.matrix.playermatrix import PlayerMatrix
+from src.matrix.obstacle import Obstacle
 from src.matrix.data import (
     constants as c,
     colours as co
 )
-from src.matrix.playermatrix import PlayerMatrix
-from src.matrix.obstacle import Obstacle
+
 
 pg.init()
 
@@ -13,13 +14,14 @@ screen: pg.Surface = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
-p = PlayerMatrix([[0, 1], [-2, -2]], 10)
-e = PlayerMatrix([[-1, 0], [3, 2]], 10)
+p = PlayerMatrix([[2,1], [1,1]], 10)
+e = PlayerMatrix([[-1, 0], [5,3]], 10)
 
-o = Obstacle([[1, 1], [2, 1], [2, 2], [1, 2]])
+o = Obstacle([[2,2], [2,0], [0,2]])
 
 print(p.getFOVPoints())
-print(o.verticies)
+print(o.getVerticies())
+print(o.checkTwoPlayers(p, e))
 
 running: bool = True
 key_is_down: bool = False
@@ -91,16 +93,18 @@ while running:
 
     pg.draw.line(screen, co.BG, p.getPosition(), e.getPosition(), 2) # type: ignore
 
+    """
     for i in range(10):
         pg.draw.circle(screen, co.BG, p.getPosition(p.position + 0.1 * i * (e.position - p.position)), i * 1.5) # type: ignore
-
+    """
     p.drawChar(screen, co.BLUE)
     e.drawChar(screen, co.PINK)
     o.draw(screen, co.KIWII)
     
     
     print(p.checkIfPointInFOV(e.position))
-    print(e.checkIfPointInFOV(p.position))
+    print(not o.checkTwoPlayers(p, e)[0])
+    #print(e.checkIfPointInFOV(p.position) and o.checkTwoPlayers(e, p)[0])
     print()
     """"""
 

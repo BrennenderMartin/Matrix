@@ -10,7 +10,7 @@ class PlayerMatrix:
     def __init__(self, m: list[list[float | int]] = [[0, 0], [0, 0]], width: int = 0) -> None:
         self.direction: np.ndarray = np.array(m[0]) # Guckrichtung
         self.position: np.ndarray = np.array(m[1]) # Position
-        self.pov: np.ndarray = np.add(self.direction / 2, self.position) # Blickpunkt (einfache Vektoraddition von pos + dir; wofür die / 2, bzw was verändert das?)
+        self.pov: np.ndarray = np.add(self.direction / np.linalg.norm(self.direction), self.position) # Blickpunkt (einfache Vektoraddition von pos + dir; wofür die / 2, bzw was verändert das?)
 
         self.FOVwidth: int = width # winkel, wie weit man nach links und rechts gucken kann
         self.FOVpoints: np.ndarray = self.getFOVPoints()
@@ -31,7 +31,7 @@ class PlayerMatrix:
         #print(f"Rotationsmatrix für eine Drehung von {angle} Grad: \n{r}")
 
         self.direction = self.getRotatedMatrix(r) # Multiplikation von den beiden Matrizen
-        self.pov = np.add(self.direction / 2, self.position) # Neue Berechnung des POV, da sich die Richtung ändert
+        self.pov = np.add(self.direction / np.linalg.norm(self.direction), self.position) # Neue Berechnung des POV, da sich die Richtung ändert
 
         #print(f"Neue Richtung: {self.direction}\n")
         return self.direction
