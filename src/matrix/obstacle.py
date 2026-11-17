@@ -2,10 +2,14 @@ import numpy as np
 #import math
 import pygame as pg
 import src.matrix.data.constants as c
+from src.matrix.playermatrix import PlayerMatrix
+
 
 class Obstacle:
     def __init__(self, verticies: list[list[float | int]]) -> None:
         self.verticies: np.ndarray = np.array(verticies)
+
+
 
     def draw(self, screen: pg.Surface, color: pg.Color) -> None:
         pg.draw.polygon(screen, color, self.getVerticiesPostitions()) # type: ignore
@@ -18,6 +22,14 @@ class Obstacle:
             c.SCREEN_MID_WIDTH + vector[0] * 100,
             c.SCREEN_MID_HEIGHT - vector[1] * 100
         ])
+
+
+
+    def checkTwoPlayers(self, p: PlayerMatrix, e: PlayerMatrix):
+        ...
+
+    def getFunction(self, p: PlayerMatrix, e: PlayerMatrix) -> any:
+        return (p.position + 0.1 * i * (e.position - p.position))
 
 if "__main__" == __name__:
     o = Obstacle([[1, 1], [2, 1], [2, 2], [1, 2]])

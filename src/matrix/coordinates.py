@@ -1,12 +1,14 @@
 import pygame as pg
 from src.matrix.data import (
-    constants as c
+    constants as c,
+    colours as co
 )
 from src.matrix.playermatrix import PlayerMatrix
 from src.matrix.obstacle import Obstacle
 
 pg.init()
 
+screen: pg.Surface = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 screen: pg.Surface = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
@@ -41,7 +43,8 @@ while running:
         e.move((0, .1))
     elif key[pg.K_k]:
         e.move((0, -.1))
-    
+
+    #EVENT HANDLER
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
@@ -81,18 +84,25 @@ while running:
                 e.kright = False
 
 
-    screen.fill(c.WHITE)
+    screen.fill(co.WHITE)
 
-    pg.draw.line(screen, c.BLACK, (0, c.SCREEN_MID_HEIGHT), (c.SCREEN_WIDTH, c.SCREEN_MID_HEIGHT), 2)
-    pg.draw.line(screen, c.BLACK, (c.SCREEN_MID_WIDTH, 0), (c.SCREEN_MID_WIDTH, c.SCREEN_HEIGHT), 2)
+    pg.draw.line(screen, co.BLACK, (0, c.SCREEN_MID_HEIGHT), (c.SCREEN_WIDTH, c.SCREEN_MID_HEIGHT), 2)
+    pg.draw.line(screen, co.BLACK, (c.SCREEN_MID_WIDTH, 0), (c.SCREEN_MID_WIDTH, c.SCREEN_HEIGHT), 2)
 
-    p.drawChar(screen, c.BLUE)
-    e.drawChar(screen, c.PINK)
-    o.draw(screen, c.KIWII)
+    pg.draw.line(screen, co.BG, p.getPosition(), e.getPosition(), 2) # type: ignore
 
+    for i in range(10):
+        pg.draw.circle(screen, co.BG, p.getPosition(p.position + 0.1 * i * (e.position - p.position)), i * 1.5) # type: ignore
+
+    p.drawChar(screen, co.BLUE)
+    e.drawChar(screen, co.PINK)
+    o.draw(screen, co.KIWII)
+    
+    
     print(p.checkIfPointInFOV(e.position))
     print(e.checkIfPointInFOV(p.position))
     print()
+    """"""
 
     pg.display.flip()
     clock.tick(24)
