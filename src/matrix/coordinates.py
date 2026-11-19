@@ -1,6 +1,5 @@
 import pygame as pg
 import numpy as np
-import math
 from src.matrix.playermatrix import PlayerMatrix
 from src.matrix.obstacle import Obstacle
 from src.matrix.data import (
@@ -93,29 +92,29 @@ while running:
     pg.draw.line(screen, co.BLACK, (0, c.SCREEN_MID_HEIGHT), (c.SCREEN_WIDTH, c.SCREEN_MID_HEIGHT), 2)
     pg.draw.line(screen, co.BLACK, (c.SCREEN_MID_WIDTH, 0), (c.SCREEN_MID_WIDTH, c.SCREEN_HEIGHT), 2)
 
-    if p.checkIfPointInFOV(e.position):
-        if o.checkTwoPlayers(p, e)[0]:
+    if e.checkIfPointInFOV(p.position):
+        if o.checkTwoPlayers(e, p)[0]:
             pg.draw.line(screen, co.BG, p.getPosition(), e.getPosition(), 2) # type: ignore
         else:
             pg.draw.line(screen, co.GREEN, p.getPosition(), e.getPosition(), 2) # type: ignore
 
     pInEFOV = False
-    if e.checkIfPointInFOV(p.position):# and not o.checkTwoPlayers(p, e)
+    if e.checkIfPointInFOV(p.position) and not o.checkTwoPlayers(p, e)[0]:
         pInEFOV = True
         d: np.ndarray = p.position - e.position
-        e.move(d / (np.linalg.norm(d) * 10))
+        e.move(d / (np.linalg.norm(d) * 100))
         if pInEFOV:
             pInEFOV = False
-            e.rotate(-abs(e.checkAngle(p.position)))
+            e.setDirection(p.position - e.position)
     p.drawChar(screen, co.BLUE)
     e.drawChar(screen, co.PINK)
     o.draw(screen, co.KIWII)
     
-    
+    """
     print(p.checkIfPointInFOV(e.position))
     print(not o.checkTwoPlayers(p, e)[0])
     print()
-    """"""
+    """
 
     pg.display.flip()
     clock.tick(24)

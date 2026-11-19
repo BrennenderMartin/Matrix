@@ -20,7 +20,12 @@ class PlayerMatrix:
 
 
 
-    def rotate(self, angle: int, direction: list[bool] = [False, False]) -> np.ndarray:
+    def setDirection(self, direction: np.ndarray) -> np.ndarray:
+        self.direction = direction
+        self.pov = np.add(self.direction / np.linalg.norm(self.direction), self.position)
+        return self.direction
+
+    def rotate(self, angle: int | float, direction: list[bool] = [False, False]) -> np.ndarray:
         self.kleft = direction[0]
         self.kright = direction[1]
         # Boolischer Wert, der überprüft, ob in diese Richtung gedreht wird
@@ -48,7 +53,7 @@ class PlayerMatrix:
 
 
 
-    def move(self, m: tuple[float, float]) -> np.ndarray: # Addition des Bewegungsvektor und der einzelnen Matrizen (Position, POV und FOV Punkte)
+    def move(self, m: tuple[float, float] | np.ndarray) -> np.ndarray: # Addition des Bewegungsvektor und der einzelnen Matrizen (Position, POV und FOV Punkte)
         self.position = np.add(self.position, np.array(m))
         self.pov = np.add(self.pov, np.array(m))
         self.FOVpoints = np.add(self.FOVpoints, np.repeat([np.array(m)], len(self.FOVpoints), axis=0)) # erklären!!
