@@ -54,10 +54,12 @@ class Obstacle:
             np.array(self.verticy - p.position)
         )
 
-        if ((0 <= solx[0] <= 1) and (-1 <= solx[1] <= 0)) or ((0 <= soly[0] <= 1) and (-1 <= soly[1] <= 0)):
-            return (True, solx)
+        sol: np.ndarray = np.array([solx, soly])
+
+        if ((0 <= solx[0] <= 1) and (-1 <= solx[1] <= 1)) or ((0 <= soly[0] <= 1) and (-1 <= soly[1] <= 1)):
+            return (True, sol)
         else:
-            return (False, solx)
+            return (False, sol)
 
 
 if "__main__" == __name__:

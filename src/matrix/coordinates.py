@@ -1,4 +1,6 @@
 import pygame as pg
+import numpy as np
+import math
 from src.matrix.playermatrix import PlayerMatrix
 from src.matrix.obstacle import Obstacle
 from src.matrix.data import (
@@ -14,8 +16,8 @@ screen: pg.Surface = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_WIDTH))
 pg.display.set_caption("Koordinatensystem")
 clock = pg.time.Clock()
 
-p = PlayerMatrix([[2,1], [1,1]], 10)
-e = PlayerMatrix([[-1, 0], [5,3]], 10)
+p = PlayerMatrix([[2, 1], [1, 1]], 10)
+e = PlayerMatrix([[0, -1], [5, 3]], 30)
 
 o = Obstacle([[2,2], [2,0], [0,2]])
 
@@ -91,12 +93,20 @@ while running:
     pg.draw.line(screen, co.BLACK, (0, c.SCREEN_MID_HEIGHT), (c.SCREEN_WIDTH, c.SCREEN_MID_HEIGHT), 2)
     pg.draw.line(screen, co.BLACK, (c.SCREEN_MID_WIDTH, 0), (c.SCREEN_MID_WIDTH, c.SCREEN_HEIGHT), 2)
 
-    pg.draw.line(screen, co.BG, p.getPosition(), e.getPosition(), 2) # type: ignore
+    if p.checkIfPointInFOV(e.position):
+        if o.checkTwoPlayers(p, e)[0]:
+            pg.draw.line(screen, co.BG, p.getPosition(), e.getPosition(), 2) # type: ignore
+        else:
+            pg.draw.line(screen, co.GREEN, p.getPosition(), e.getPosition(), 2) # type: ignore
 
-    """
-    for i in range(10):
-        pg.draw.circle(screen, co.BG, p.getPosition(p.position + 0.1 * i * (e.position - p.position)), i * 1.5) # type: ignore
-    """
+    pInEFOV = False
+    if e.checkIfPointInFOV(p.position):# and not o.checkTwoPlayers(p, e)
+        pInEFOV = True
+        d: np.ndarray = p.position - e.position
+        e.move(d / (np.linalg.norm(d) * 10))
+        if pInEFOV:
+            pInEFOV = False
+            e.rotate(-abs(e.checkAngle(p.position)))
     p.drawChar(screen, co.BLUE)
     e.drawChar(screen, co.PINK)
     o.draw(screen, co.KIWII)
@@ -104,7 +114,6 @@ while running:
     
     print(p.checkIfPointInFOV(e.position))
     print(not o.checkTwoPlayers(p, e)[0])
-    #print(e.checkIfPointInFOV(p.position) and o.checkTwoPlayers(e, p)[0])
     print()
     """"""
 
